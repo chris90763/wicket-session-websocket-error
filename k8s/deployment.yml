@@ -1,0 +1,54 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: test-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-client
+  template:
+    metadata:
+      labels:
+        app: test-client
+    spec:
+      containers:
+        - name: test-client
+          image: localhost:5000/test-client
+#          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readinessState
+              port: 8543
+            initialDelaySeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/livenessState
+              port: 8543
+            initialDelaySeconds: 10
+          env:
+            - name: SPRING_REDIS_HOST
+              value: redis.dev
+      restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: test-client
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+    - name: management
+      port: 8543
+      targetPort: 8543
+#    - name: https
+#      port: 8443
+#      targetPort: 8443
+#  type: NodePort
+#  type: ClusterIP
+  selector:
+    app: test-client

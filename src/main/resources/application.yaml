@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: test-client
+  profiles:
+    active: "dev"
+
+
+server:
+  port: 8080
+#  use-forward-headers: true
+#  forward-headers-strategy: framework
+
+management:
+  server:
+    port: 8543
+    ssl:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+logging:
+  level:
+    root: WARN
+
+
