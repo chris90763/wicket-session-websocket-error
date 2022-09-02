@@ -1,0 +1,143 @@
+buildscript {
+    ext {
+        springBootVersion = '2.7.3'
+//        springBootVersion = '2.6.1'
+        springCloudVersion = '2021.0.3' //compatible with spring boot 2.7.3 and 2.6.1
+        lombokVersion = '1.18.22'
+        logstashVersion = '6.6'
+    }
+
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE"
+        classpath 'com.bmuschko:gradle-docker-plugin:7.1.0'
+    }
+}
+
+
+
+plugins {
+    id 'application'
+    id 'org.springframework.boot' version "${springBootVersion}"
+//    id 'com.bmuschko.docker-spring-boot-application'
+    id 'java'
+
+    id 'com.google.cloud.tools.jib' version '3.2.0'
+}
+apply plugin: 'io.spring.dependency-management'
+
+group = 'de.test.client'
+version = '0.0.1-SNAPSHOT'
+//sourceCompatibility = '16'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        //mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+def wicketVersion = '9.11.0'
+def wicketJQueryVersion = '9.8.1'
+
+def jettyVersion = '9.4.11.v20180605'
+def weldVersion = '2.4.8.Final'
+def seleniumVersion = '4.2.0'
+def seleniumWebDriver = '5.2.0'
+def seleniumJupiter = '4.1.0'
+
+
+dependencies {
+//    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+//    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+    implementation 'org.springframework.cloud:spring-cloud-commons'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    implementation 'org.springframework.security.oauth:spring-security-oauth2:2.5.1.RELEASE'
+//    implementation 'org.springframework.security:spring-security-oauth2-client'
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+//    implementation 'org.springframework.security:spring-security-jwt:1.1.1.RELEASE'
+
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    runtimeOnly group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: project.properties.logstashVersion
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springdoc:springdoc-openapi-webmvc-core:1.6.8'
+
+    implementation 'com.google.guava:guava:31.1-jre'
+
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+    implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+    implementation 'com.sun.xml.bind:jaxb-impl:2.3.1'
+    implementation 'org.javassist:javassist:3.25.0-GA'
+
+
+    implementation 'com.giffing.wicket.spring.boot.starter:wicket-spring-boot-starter:3.1.6'
+//        implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.12.3'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-guava'
+//    implementation group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.8'
+    implementation group: 'org.apache.wicket', name: 'wicket', version: wicketVersion
+    implementation group: 'org.apache.wicket', name: 'wicket-extensions', version: wicketVersion
+    implementation group: 'org.apache.wicket', name: 'wicket-auth-roles', version: wicketVersion
+    implementation group: 'org.apache.wicket', name: 'wicket-spring', version: wicketVersion
+    implementation group: 'org.apache.wicket', name: 'wicket-ioc', version: wicketVersion
+    implementation group: 'org.apache.wicket', name: 'wicket-bean-validation', version: wicketVersion
+    implementation group: 'org.apache.wicket', name: 'wicket-devutils', version: wicketVersion
+    implementation group: 'org.wicketstuff', name: 'wicketstuff-datastore-common', version: wicketVersion
+//    implementation group: 'redis.clients', name: 'jedis'
+//    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+//    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
+//    implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
+    implementation group: 'org.springframework.session', name: 'spring-session-jdbc'
+    implementation 'com.h2database:h2:1.4.197'
+
+//    implementation group: 'org.apache.wicket', name: 'wicket-cdi', version: wicketVersion
+//        implementation group: 'org.wicketstuff', name: 'wicketstuff-datastore-memcached', version: wicketVersion //for clustering
+    implementation group: 'com.googlecode.wicket-jquery-ui', name: 'wicket-jquery-ui', version: wicketJQueryVersion
+    implementation group: 'com.googlecode.wicket-jquery-ui', name: 'wicket-jquery-ui-core', version: wicketJQueryVersion
+    implementation group: 'com.googlecode.wicket-jquery-ui', name: 'wicket-jquery-ui-plugins', version: wicketJQueryVersion
+//    implementation group: 'org.wicketstuff', name: 'wicketstuff-javaee-inject', version: wicketVersion
+//    implementation group: 'de.adesso.wicked-charts', name: 'wicked-charts-wicket7', version: '3.0.0' //wicket8 version doesnt work correct yet....
+//    implementation group: 'de.adesso.wicked-charts', name: 'wicked-charts-wicket8', version: '3.2.1'
+//    implementation group: 'net.ftlines.wicket-fullcalendar', name: 'wicket-fullcalendar-core', version: '4.2' //dependency to wicket8
+
+
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.23'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation group: 'org.apache.wicket', name: 'wicket-native-websocket-javax', version: wicketVersion
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    compileOnly group: 'org.projectlombok', name:'lombok'
+    testCompileOnly group: 'org.projectlombok', name:'lombok'
+    annotationProcessor group: 'org.projectlombok', name:'lombok'
+    testAnnotationProcessor group: 'org.projectlombok', name:'lombok'
+}
+
+
+
+bootJar {
+    enabled = true
+}
+
+jib {
+    from.image = 'openjdk:17'
+    to.image = 'localhost:5000/test-client'
+    container {
+//        jvmFlags = ['-Xms512m', '-Xdebug']
+        mainClass = 'de.test.client.ClientApplication'
+        args = []
+        ports = ['8080/tcp']
+    }
+}
